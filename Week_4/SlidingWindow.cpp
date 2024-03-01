@@ -1,26 +1,41 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include <stack>
+#include <deque>
 
 using namespace std;
 
 vector<int> maxSlidingWindow(vector<int>& nums, int k) {
         vector<int>res;
+        deque<int>max;
         int n=nums.size();
-        auto x1=nums.begin();
-        auto x2=x1+k;
-        for(int i=0;i<n-k+1;++i,++x1,++x2)
+        for(int i=0;i<k;++i)
         {
-            res.push_back(*max_element(x1,x2));
+            if(max.empty()||nums[i]>max.back())
+                max.push_back(nums[i]);
+        }
+        res.emplace_back(max.back());
+        for(int i=k;i<n;++i)
+        {
+            if(max.front() == nums[i - k])//if number out of window
+                max.pop_front();
+            if(max.empty())
+                max.push_back(nums[i]);
+                
+            if(nums[i]>max.back())
+            {
+                max.push_back(nums[i]);
+                max.pop_front();
+            }
+            res.emplace_back(max.back());
         }
         return res;
     }
 
 int main()
 {
-    int k=1;
-    vector<int>nums={1};
+    int k=2;
+    vector<int>nums={7,2,4};
     vector<int>res=maxSlidingWindow(nums,k);
     for(auto it:res)
         cout<<it<<" ";
